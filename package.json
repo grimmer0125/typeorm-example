@@ -29,11 +29,13 @@
   "dependencies": {
     "pg": "^8.1.0",
     "reflect-metadata": "^0.1.13",
+    "ts-node": "^8.10.1",
     "typeorm": "^0.2.24"
   },
   "scripts": {
     "start": "tsc && node src/index.js",
-    "typeorm": "./node_modules/.bin/typeorm "
+    "typeorm": "./node_modules/.bin/typeorm ",
+    "dev": "ts-node src/index.ts"
   },
   "resolutions": {
     "tslib": "1.11.2"

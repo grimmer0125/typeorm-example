@@ -8,7 +8,7 @@
   "database": "test",
   "synchronize": true,
   "logging": false,
-  "entities": ["src/entity/*.js"],
+  "entities": ["src/entity/*.{js,ts}"],
   "subscribers": ["src/subscriber/*.js"],
   "migrations": ["src/migration/*.js"],
   "cli": {
