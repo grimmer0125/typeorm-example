@@ -33,8 +33,9 @@
     "typeorm": "^0.2.24"
   },
   "scripts": {
-    "start": "tsc && node src/index.js",
-    "typeorm": "./node_modules/.bin/typeorm ",
+    "build": "tsc",
+    "start": "tsc && node dist/index.js",
+    "typeorm": "ts-node ./node_modules/typeorm/cli.js",
     "dev": "ts-node src/index.ts"
   },
   "resolutions": {

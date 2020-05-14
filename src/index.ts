@@ -38,9 +38,11 @@ async function activeRecord(connectin: Connection) {
 
 (async () => {
   try {
+    console.log("start connection");
     const connectin = await createConnection();
     // await dataMapper(connectin);
     await activeRecord(connectin);
+    console.log("program is finished");
   } catch (error) {
     console.log("Error: ", error);
   }
