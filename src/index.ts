@@ -5,6 +5,7 @@ import { User } from "./entity/User";
 import { Photo } from "./entity/Photo";
 import { PhotoMetadata } from "./entity/PhotoMetadata";
 import { Author } from "./entity/Author";
+import { Album } from "./entity/Album";
 
 // TODO:
 // 1. select by TypeORM
@@ -13,28 +14,85 @@ import { Author } from "./entity/Author";
 
 let connection: Connection;
 
-// data mapper pattern
 async function testManyToMany() {
-  const category1 = new Category();
-  category1.name = "TypeScript";
-  await connection.manager.save(category1);
+  // create a few albums
+  let album1 = new Album();
+  album1.name = "Bears";
+  await connection.manager.save(album1);
 
-  const category2 = new Category();
-  category2.name = "Programming";
-  await connection.manager.save(category2);
+  let album2 = new Album();
+  album2.name = "Me6";
+  await connection.manager.save(album2);
 
-  const post = new Post();
-  post.title = "Control flow based type analysis";
-  post.text = `TypeScript 2.0 implements a control flow-based type analysis for local variables and parameters.`;
-  post.categories = [category1, category2];
+  // create a few photos
+  let photo = new Photo();
+  photo.name = "Me and Bears6";
+  photo.description = "I am near polar bears5";
+  photo.filename = "photo-with-bears5.jpg";
+  photo.albums = [album1, album2];
+  photo.isPublished = true;
+  await connection.manager.save(photo);
 
-  await connection.manager.save(post);
-  console.log("Post has been saved: ", post);
+  // now our photo is saved and albums are attached to it
+  // now lets load them:
+  const loadedPhoto = await connection
+    .getRepository(Photo)
+    .findOne({ name: "Me and Bears6" }, { relations: ["albums"] });
 
-  const firstPost = await connection.manager.findOne(Post, 1); // find by id
-  let categoryRepository = connection.getRepository(Category);
-  const [allCategory, categoryCount] = await categoryRepository.findAndCount();
-  console.log("testManyToMany done");
+  const loadedAlbums = await connection
+    .getRepository(Album)
+    .findOne({ name: "Me6" }, { relations: ["photos"] });
+}
+
+async function testOneToMany() {
+  /**
+   * save: 2 ways. either author.photos or assign per photo.author
+   */
+  const author = new Author();
+  author.name = "John";
+  await connection.manager.save(author);
+
+  const photo1 = new Photo();
+  photo1.name = "me11.jpg";
+  photo1.description = "I am near polar bears1";
+  photo1.filename = "photo-with-bears1.jpg";
+  photo1.isPublished = true;
+  photo1.author = author;
+  await connection.manager.save(photo1);
+
+  const photo2 = new Photo();
+  photo2.name = "me-and-bears22.jpg";
+  photo2.description = "I am near polar bears2";
+  photo2.filename = "photo-with-bears2.jpg";
+  photo2.isPublished = true;
+  photo2.author = author;
+  await connection.manager.save(photo2);
+
+  /**
+   * read
+   */
+
+  const authorRepository = connection.getRepository(Author);
+  const authors = await authorRepository.find({ relations: ["photos"] });
+
+  // or from inverse side
+
+  const photoRepository = connection.getRepository(Photo);
+  const photos = await photoRepository.find({ relations: ["author"] });
+
+  const authors2 = await connection
+    .getRepository(Author)
+    .createQueryBuilder("author")
+    .leftJoinAndSelect("author.photos", "photo")
+    .getMany();
+
+  // or from inverse side
+
+  const photos2 = await connection
+    .getRepository(Photo)
+    .createQueryBuilder("photo")
+    .leftJoinAndSelect("photo.author", "author")
+    .getMany();
 }
 
 // using https://typeorm.io/#/undefined/inverse-side-of-the-relationship
@@ -107,55 +165,29 @@ async function testSaveOneToOne() {
   console.log("Photo is saved, photo metadata is saved too.");
 }
 
-async function testOneToMany() {
-  /**
-   * save: 2 ways. either author.photos or assign per photo.author
-   */
-  const author = new Author();
-  author.name = "John";
-  await connection.manager.save(author);
+// data mapper pattern
+// from https://github.com/grimmer0125/typeorm-example
+async function testManyToMany1() {
+  const category1 = new Category();
+  category1.name = "TypeScript";
+  await connection.manager.save(category1);
 
-  const photo1 = new Photo();
-  photo1.name = "me11.jpg";
-  photo1.description = "I am near polar bears1";
-  photo1.filename = "photo-with-bears1.jpg";
-  photo1.isPublished = true;
-  photo1.author = author;
-  await connection.manager.save(photo1);
+  const category2 = new Category();
+  category2.name = "Programming";
+  await connection.manager.save(category2);
 
-  const photo2 = new Photo();
-  photo2.name = "me-and-bears22.jpg";
-  photo2.description = "I am near polar bears2";
-  photo2.filename = "photo-with-bears2.jpg";
-  photo2.isPublished = true;
-  photo2.author = author;
-  await connection.manager.save(photo2);
+  const post = new Post();
+  post.title = "Control flow based type analysis";
+  post.text = `TypeScript 2.0 implements a control flow-based type analysis for local variables and parameters.`;
+  post.categories = [category1, category2];
 
-  /**
-   * read
-   */
+  await connection.manager.save(post);
+  console.log("Post has been saved: ", post);
 
-  const authorRepository = connection.getRepository(Author);
-  const authors = await authorRepository.find({ relations: ["photos"] });
-
-  // or from inverse side
-
-  const photoRepository = connection.getRepository(Photo);
-  const photos = await photoRepository.find({ relations: ["author"] });
-
-  const authors2 = await connection
-    .getRepository(Author)
-    .createQueryBuilder("author")
-    .leftJoinAndSelect("author.photos", "photo")
-    .getMany();
-
-  // or from inverse side
-
-  const photos2 = await connection
-    .getRepository(Photo)
-    .createQueryBuilder("photo")
-    .leftJoinAndSelect("photo.author", "author")
-    .getMany();
+  const firstPost = await connection.manager.findOne(Post, 1); // find by id
+  let categoryRepository = connection.getRepository(Category);
+  const [allCategory, categoryCount] = await categoryRepository.findAndCount();
+  console.log("testManyToMany done");
 }
 
 async function testActiveRecord(connectin: Connection) {
@@ -183,12 +215,14 @@ async function testActiveRecord(connectin: Connection) {
     connection = await createConnection();
     console.log("connection is ok");
 
-    await testOneToMany();
+    await testManyToMany();
+
+    // await testOneToMany();
 
     // await testSaveOneToOne();
     // await testReadOneToOne();
 
-    // await testManyToMany(connectin);
+    // await testManyToMany1(connectin);
 
     // await testActiveRecord(connectin);
     console.log("program is finished");
