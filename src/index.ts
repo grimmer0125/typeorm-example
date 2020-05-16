@@ -14,6 +14,23 @@ import { Album } from "./entity/Album";
 
 let connection: Connection;
 
+async function testQueryBuilder() {
+  let photos = await connection
+    .getRepository(Photo)
+    .createQueryBuilder("photo") // first argument is an alias. Alias is what you are selecting - photos. You must specify it.
+    // .innerJoinAndSelect("photo.metadata", "metadata")
+    .leftJoinAndSelect("photo.albums", "album")
+    .where("photo.isPublished = true")
+    // TODO: andWhere will result in no data, why?
+    // .andWhere("(photo.name = :photoName OR photo.name = :bearName)")
+    .orderBy("photo.id", "DESC")
+    .skip(5)
+    .take(10)
+    .setParameters({ photoName: "My", bearName: "Me and Bears6" })
+    .getMany();
+  console.log("done");
+}
+
 async function testManyToMany() {
   // create a few albums
   let album1 = new Album();
@@ -215,7 +232,9 @@ async function testActiveRecord(connectin: Connection) {
     connection = await createConnection();
     console.log("connection is ok");
 
-    await testManyToMany();
+    await testQueryBuilder();
+
+    // await testManyToMany();
 
     // await testOneToMany();
 
