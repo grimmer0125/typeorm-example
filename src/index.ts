@@ -5,6 +5,8 @@ import { User } from "./entity/User";
 import { Photo } from "./entity/Photo";
 import { PhotoMetadata } from "./entity/PhotoMetadata";
 
+let connection: Connection;
+
 // data mapper pattern
 async function testManyToMany(connection: Connection) {
   const category1 = new Category();
@@ -26,10 +28,43 @@ async function testManyToMany(connection: Connection) {
   const firstPost = await connection.manager.findOne(Post, 1); // find by id
   let categoryRepository = connection.getRepository(Category);
   const [allCategory, categoryCount] = await categoryRepository.findAndCount();
-  console.log("tes1 done");
+  console.log("testManyToMany done");
 }
 
-async function testOneToOne(connection: Connection) {
+// using https://typeorm.io/#/undefined/inverse-side-of-the-relationship
+// sql'join is = mongo's lookup
+// https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/#pipe._S_lookup
+async function testReadOneToOne() {
+  /** 1. way */
+  // in photoMeta, save and setup its foreign key as photo's primary key
+  console.log("one to one relationship query");
+
+  const photoMetaRepository = connection.getRepository(PhotoMetadata);
+  const photoMetas = await photoMetaRepository.find({ relations: ["photo"] });
+
+  /** 2. way */
+  // no these returned objects in mongoose, in mongoose, only photoMetaData.photo.
+  // so in monogoose, we need to organize the retunred data as photos.metadata after querying
+  // in mongo' raw lookup query, is ok (since just array data return)
+  console.log("inverse-side-of-the-relationship query");
+
+  let photoRepository = connection.getRepository(Photo);
+  // left Join
+  let photos = await photoRepository.find({ relations: ["metadata"] });
+
+  /** 3. way */
+  // no this in mongoose
+  console.log("query builder");
+
+  // INNER JOIN
+  let photos2 = await connection
+    .getRepository(Photo)
+    .createQueryBuilder("photo")
+    .innerJoinAndSelect("photo.metadata", "metadata")
+    .getMany();
+}
+
+async function testSaveOneToOne(connection: Connection) {
   // create a photo
   let photo = new Photo();
   photo.name = "Me and Bears";
@@ -84,10 +119,13 @@ async function testActiveRecord(connectin: Connection) {
 (async () => {
   try {
     console.log("start connection");
-    const connectin = await createConnection();
+    connection = await createConnection();
+    console.log("connection is ok");
+
+    await testReadOneToOne();
     // await testManyToMany(connectin);
     // await testActiveRecord(connectin);
-    await testOneToOne(connectin);
+    // await testSaveOneToOne(connectin);
     console.log("program is finished");
   } catch (error) {
     console.log("Error: ", error);

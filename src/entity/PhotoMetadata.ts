@@ -27,7 +27,8 @@ export class PhotoMetadata {
   @Column()
   comment: string;
 
-  @OneToOne((type) => Photo)
+  // (photo) => photo.metadata) is for Inverse side of the relationship
+  @OneToOne((type) => Photo, (photo) => photo.metadata)
   @JoinColumn()
   photo: Photo;
 }
