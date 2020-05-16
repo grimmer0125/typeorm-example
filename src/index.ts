@@ -7,10 +7,10 @@ import { PhotoMetadata } from "./entity/PhotoMetadata";
 import { Author } from "./entity/Author";
 import { Album } from "./entity/Album";
 
-// TODO:
-// 1. select by TypeORM
+// NOTE:
+// 1. select by TypeORM & chain relation query (Sub-relations): https://typeorm.io/#/find-options
 // 2. select related data
-// 3. chain relation query ?
+//    only can use querybuilder, https://stackoverflow.com/questions/54516730/typeorm-select-options-for-relationship
 
 let connection: Connection;
 
@@ -51,7 +51,7 @@ async function testManyToMany() {
   await connection.manager.save(photo);
 
   // now our photo is saved and albums are attached to it
-  // now lets load them:
+  // now lets load them: (implictly use 2 joins, one is album, the other one is photo__albums_photo!!)
   const loadedPhoto = await connection
     .getRepository(Photo)
     .findOne({ name: "Me and Bears6" }, { relations: ["albums"] });
