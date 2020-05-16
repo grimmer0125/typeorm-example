@@ -6,7 +6,9 @@
 4. run `yarn dev`
 5. enjoy!
 
-### Issues
+## Issues
+
+### tsc and ts-node mix issue
 
 - `yarn start` only works for `"entities": ["src/entity/*.js"]`
 - `"entities": ["src/entity/*.{js,ts}"]` is needed for ts-node usage.
