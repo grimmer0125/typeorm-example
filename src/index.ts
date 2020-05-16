@@ -8,7 +8,7 @@ import { PhotoMetadata } from "./entity/PhotoMetadata";
 let connection: Connection;
 
 // data mapper pattern
-async function testManyToMany(connection: Connection) {
+async function testManyToMany() {
   const category1 = new Category();
   category1.name = "TypeScript";
   await connection.manager.save(category1);
@@ -66,7 +66,7 @@ async function testReadOneToOne() {
     .getMany();
 }
 
-async function testSaveOneToOne(connection: Connection) {
+async function testSaveOneToOne() {
   // create a photo
   let photo = new Photo();
   photo.name = "Me and Bears";
@@ -81,22 +81,22 @@ async function testSaveOneToOne(connection: Connection) {
   metadata.compressed = true;
   metadata.comment = "cybershoot";
   metadata.orientation = "portait";
-  metadata.photo = photo; // this way we connect them
+  // metadata.photo = photo; // this way we connect them
+
+  photo.metadata = metadata;
 
   // get entity repositories
   let photoRepository = connection.getRepository(Photo);
-  let metadataRepository = connection.getRepository(PhotoMetadata);
+  // let metadataRepository = connection.getRepository(PhotoMetadata);
 
   // first we should save a photo
   await photoRepository.save(photo);
 
   // photo is saved. Now we need to save a photo metadata
-  await metadataRepository.save(metadata);
+  // await metadataRepository.save(metadata);
 
   // done
-  console.log(
-    "Metadata is saved, and relation between metadata and photo is created in the database too"
-  );
+  console.log("Photo is saved, photo metadata is saved too.");
 }
 
 async function testActiveRecord(connectin: Connection) {
@@ -124,10 +124,12 @@ async function testActiveRecord(connectin: Connection) {
     connection = await createConnection();
     console.log("connection is ok");
 
-    await testReadOneToOne();
+    await testSaveOneToOne();
+    // await testReadOneToOne();
+
     // await testManyToMany(connectin);
+
     // await testActiveRecord(connectin);
-    // await testSaveOneToOne(connectin);
     console.log("program is finished");
   } catch (error) {
     console.log("Error: ", error);

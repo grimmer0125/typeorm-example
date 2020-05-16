@@ -23,6 +23,10 @@ export class Photo {
   @Column()
   isPublished: boolean;
 
-  @OneToOne((type) => PhotoMetadata, (photoMetadata) => photoMetadata.photo)
+  // setup typeorm cascade but its auto save seems not exact CASCADE?
+  // https://docs.postgresql.tw/the-sql-language/ddl/constraints
+  @OneToOne((type) => PhotoMetadata, (metadata) => metadata.photo, {
+    cascade: true,
+  })
   metadata: PhotoMetadata;
 }
