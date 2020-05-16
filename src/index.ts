@@ -4,6 +4,12 @@ import { Category } from "./entity/Category";
 import { User } from "./entity/User";
 import { Photo } from "./entity/Photo";
 import { PhotoMetadata } from "./entity/PhotoMetadata";
+import { Author } from "./entity/Author";
+
+// TODO:
+// 1. select by TypeORM
+// 2. select related data
+// 3. chain relation query ?
 
 let connection: Connection;
 
@@ -69,34 +75,87 @@ async function testReadOneToOne() {
 async function testSaveOneToOne() {
   // create a photo
   let photo = new Photo();
-  photo.name = "Me and Bears";
-  photo.description = "I am near polar bears";
-  photo.filename = "photo-with-bears.jpg";
+  photo.name = "Me and Bears23";
+  photo.description = "I am near polar bears2";
+  photo.filename = "photo-with-bears2.jpg";
   photo.isPublished = true;
 
   // create a photo metadata
   let metadata = new PhotoMetadata();
-  metadata.height = 640;
-  metadata.width = 480;
+  metadata.height = 1640;
+  metadata.width = 1480;
   metadata.compressed = true;
-  metadata.comment = "cybershoot";
-  metadata.orientation = "portait";
+  metadata.comment = "cybershoot2";
+  metadata.orientation = "portait2";
   // metadata.photo = photo; // this way we connect them
 
+  // auto save metada.phto -> only works in cascade mode,
+  // not like one to many <- saving on either side is ok without cascade setting
   photo.metadata = metadata;
 
   // get entity repositories
   let photoRepository = connection.getRepository(Photo);
-  // let metadataRepository = connection.getRepository(PhotoMetadata);
+  let metadataRepository = connection.getRepository(PhotoMetadata);
 
   // first we should save a photo
   await photoRepository.save(photo);
 
   // photo is saved. Now we need to save a photo metadata
-  // await metadataRepository.save(metadata);
+  await metadataRepository.save(metadata);
 
   // done
   console.log("Photo is saved, photo metadata is saved too.");
+}
+
+async function testOneToMany() {
+  /**
+   * save: 2 ways. either author.photos or assign per photo.author
+   */
+  const author = new Author();
+  author.name = "John";
+  await connection.manager.save(author);
+
+  const photo1 = new Photo();
+  photo1.name = "me11.jpg";
+  photo1.description = "I am near polar bears1";
+  photo1.filename = "photo-with-bears1.jpg";
+  photo1.isPublished = true;
+  photo1.author = author;
+  await connection.manager.save(photo1);
+
+  const photo2 = new Photo();
+  photo2.name = "me-and-bears22.jpg";
+  photo2.description = "I am near polar bears2";
+  photo2.filename = "photo-with-bears2.jpg";
+  photo2.isPublished = true;
+  photo2.author = author;
+  await connection.manager.save(photo2);
+
+  /**
+   * read
+   */
+
+  const authorRepository = connection.getRepository(Author);
+  const authors = await authorRepository.find({ relations: ["photos"] });
+
+  // or from inverse side
+
+  const photoRepository = connection.getRepository(Photo);
+  const photos = await photoRepository.find({ relations: ["author"] });
+
+  const authors2 = await connection
+    .getRepository(Author)
+    .createQueryBuilder("author")
+    .leftJoinAndSelect("author.photos", "photo")
+    .getMany();
+
+  // or from inverse side
+
+  const photos2 = await connection
+    .getRepository(Photo)
+    .createQueryBuilder("photo")
+    .leftJoinAndSelect("photo.author", "author")
+    .getMany();
 }
 
 async function testActiveRecord(connectin: Connection) {
@@ -124,7 +183,9 @@ async function testActiveRecord(connectin: Connection) {
     connection = await createConnection();
     console.log("connection is ok");
 
-    await testSaveOneToOne();
+    await testOneToMany();
+
+    // await testSaveOneToOne();
     // await testReadOneToOne();
 
     // await testManyToMany(connectin);

@@ -7,6 +7,8 @@ import {
 } from "typeorm";
 import { Photo } from "./Photo";
 
+// referencing table or child
+// https://www.postgresqltutorial.com/postgresql-foreign-key/
 @Entity()
 export class PhotoMetadata {
   @PrimaryGeneratedColumn()
@@ -29,6 +31,6 @@ export class PhotoMetadata {
 
   // (photo) => photo.metadata) is for Inverse side of the relationship
   @OneToOne((type) => Photo, (photo) => photo.metadata)
-  @JoinColumn() // = setup foreign key
+  @JoinColumn() // = setup unique foreign key
   photo: Photo;
 }

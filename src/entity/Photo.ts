@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  ManyToOne,
+} from "typeorm";
 import { PhotoMetadata } from "./PhotoMetadata";
+import { Author } from "./Author";
 
 @Entity()
 export class Photo {
@@ -23,10 +30,13 @@ export class Photo {
   @Column()
   isPublished: boolean;
 
+  // no real field in db
   // setup typeorm cascade but its auto save seems not exact CASCADE?
   // https://docs.postgresql.tw/the-sql-language/ddl/constraints
-  @OneToOne((type) => PhotoMetadata, (metadata) => metadata.photo, {
-    cascade: true,
-  })
+  @OneToOne((type) => PhotoMetadata, (metadata) => metadata.photo)
   metadata: PhotoMetadata;
+
+  // foreign key
+  @ManyToOne((type) => Author, (author) => author.photos)
+  author: Author;
 }
