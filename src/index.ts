@@ -43,9 +43,11 @@ async function testReadOneToOne() {
   const photoMetas = await photoMetaRepository.find({ relations: ["photo"] });
 
   /** 2. way */
-  // no these returned objects in mongoose, in mongoose, only photoMetaData.photo.
+  // 1. no these returned objects in mongoose's population,
+  // in mongoose, only photoMetaData.photo.
+  // it is more like innerjoin but like table2.table1 (table2 has set foreign key)
   // so in monogoose, we need to organize the retunred data as photos.metadata after querying
-  // in mongo' raw lookup query, is ok (since just array data return)
+  // 2. in mongo' raw lookup query, is ok (since just array data return)
   console.log("inverse-side-of-the-relationship query");
 
   let photoRepository = connection.getRepository(Photo);

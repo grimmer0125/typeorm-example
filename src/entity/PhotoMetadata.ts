@@ -29,6 +29,6 @@ export class PhotoMetadata {
 
   // (photo) => photo.metadata) is for Inverse side of the relationship
   @OneToOne((type) => Photo, (photo) => photo.metadata)
-  @JoinColumn()
+  @JoinColumn() // = setup foreign key
   photo: Photo;
 }
