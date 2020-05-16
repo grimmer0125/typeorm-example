@@ -13,4 +13,13 @@ export class User extends BaseEntity {
 
   @Column()
   age: number;
+
+  @Column({ default: 1, nullable: false })
+  price: number;
+
+  @Column({ nullable: true }) // default is null
+  nick: number;
+
+  @Column({ nullable: true }) // default is null
+  bad: number;
 }
