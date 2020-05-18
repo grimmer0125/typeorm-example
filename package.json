@@ -34,7 +34,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node dist/index.js",
+    "deploy": "NODE_ENV=production node dist/index.js",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",
     "dev": "ts-node src/index.ts"
   },
