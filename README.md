@@ -29,8 +29,3 @@ ref:
 5. https://stackoverflow.com/questions/59727358/typeorm-dont-use-ormconfig-json-file
 
 no.4 gives a hint to solve ts-node and tsc conflict issue, try to prepare 2 settings, ref: https://github.com/typeorm/typeorm/blob/master/docs/using-ormconfig.md
-
-## How to use CLI?
-
-1. install `typeorm` globally: `yarn global add typeorm`
-2. run `typeorm -h` to show list of available commands
