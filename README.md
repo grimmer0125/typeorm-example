@@ -8,6 +8,12 @@
 
 ## Issues
 
+### TypeORM 0.2.24 (latest) is not compatible with tslib 2.0.0
+
+tslib 1.11.2/1.13.0 works
+
+ref: https://github.com/typeorm/typeorm/issues/6054
+
 ### tsc and ts-node mix issue
 
 - `yarn start` only works for `"entities": ["src/entity/*.js"]`
