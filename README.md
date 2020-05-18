@@ -1,10 +1,11 @@
 # Example how to use TypeORM with TypeScript
 
 1. clone repository
-2. run `yarn install`
-3. edit `ormconfig.json` and change your database configuration (e.g. username/password/database, you can also change a database type, but don't forget to install specific database drivers)
-4. run `yarn dev`
-5. enjoy!
+2. install yarn v1, https://classic.yarnpkg.com/lang/en/
+3. run `yarn install`
+4. edit `ormconfig.json` and change your database configuration (e.g. username/password/database, you can also change a database type, but don't forget to install specific database drivers)
+5. run `yarn dev`
+6. enjoy!
 
 ## Issues
 
