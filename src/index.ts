@@ -6,13 +6,28 @@ import { Photo } from "./entity/Photo";
 import { PhotoMetadata } from "./entity/PhotoMetadata";
 import { Author } from "./entity/Author";
 import { Album } from "./entity/Album";
-
+import { Car } from "./entity/Car";
 // NOTE:
 // 1. select by TypeORM & chain relation query (Sub-relations): https://typeorm.io/#/find-options
 // 2. select related data
 //    only can use querybuilder, https://stackoverflow.com/questions/54516730/typeorm-select-options-for-relationship
 
 let connection: Connection;
+
+async function testJSON() {
+  let car = new Car();
+  car.name = "tesla";
+  car.json = {
+    name: 1,
+  };
+  car.jsonb = { id: 1, name: "Post" };
+
+  await connection.manager.save(car);
+
+  // seems not able to query json.name = 1
+  const loadedCar = await connection.getRepository(Car).findOne({});
+  console.log("load car:", loadedCar);
+}
 
 // https://github.com/typeorm/typeorm/blob/master/sample/sample22-closure-table/app.ts
 // https://typeorm.io/#/entities/closure-table
@@ -319,7 +334,9 @@ async function testActiveRecord(connectin: Connection) {
     connection = await createConnection();
     console.log("connection is ok");
 
-    await testClosureTable();
+    await testJSON();
+
+    // await testClosureTable();
 
     // await testQueryBuilder();
 
