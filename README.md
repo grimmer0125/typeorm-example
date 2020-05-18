@@ -14,7 +14,7 @@ tslib 1.11.2/1.13.0 works
 
 ref: https://github.com/typeorm/typeorm/issues/6054
 
-### tsc and ts-node mix issue
+### ~tsc and ts-node mix issue~ Solved by using 2 settings
 
 - `yarn start` only works for `"entities": ["src/entity/*.js"]`
 - `"entities": ["src/entity/*.{js,ts}"]` is needed for ts-node usage.
