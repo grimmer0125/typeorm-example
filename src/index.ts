@@ -14,6 +14,93 @@ import { Album } from "./entity/Album";
 
 let connection: Connection;
 
+// https://github.com/typeorm/typeorm/blob/master/sample/sample22-closure-table/app.ts
+// https://typeorm.io/#/entities/closure-table
+// https://github.com/typeorm/typeorm/blob/master/test/functional/tree-tables/closure-table/entity/Category.ts
+// https://github.com/typeorm/typeorm/blob/master/test/functional/tree-tables/closure-table/closure-table.ts
+async function testClosureTable() {
+  let categoryRepository = connection.getTreeRepository(Category);
+
+  let childChildCategory1 = new Category();
+  childChildCategory1.name = "Child #1 of Child #1 of Category #1";
+
+  let childChildCategory2 = new Category();
+  childChildCategory2.name = "Child #1 of Child #2 of Category #1";
+
+  let childCategory1 = new Category();
+  childCategory1.name = "Child #1 of Category #1";
+  childCategory1.childCategories = [childChildCategory1];
+
+  let childCategory2 = new Category();
+  childCategory2.name = "Child #2 of Category #1";
+  childCategory2.childCategories = [childChildCategory2];
+
+  let category1 = new Category();
+  category1.name = "Category #1";
+  category1.childCategories = [childCategory1, childCategory2];
+
+  await categoryRepository.save(category1);
+
+  console.log(
+    "Categories has been saved. Lets now load it and all its descendants:"
+  );
+
+  const categories = await categoryRepository.findDescendants(category1);
+
+  // .then((category) => {
+  //   console.log(
+  //     "Categories has been saved. Lets now load it and all its descendants:"
+  //   );
+  //   return categoryRepository.findDescendants(category1);
+  // })
+  // .then((categories) => {
+  console.log(categories);
+  console.log("Descendants has been loaded. Now lets get them in a tree:");
+  const categories2 = await categoryRepository.findDescendantsTree(category1);
+  // })
+  // .then((categories) => {
+  console.log(categories2);
+  console.log(
+    "Descendants in a tree has been loaded. Now lets get a count of the descendants:"
+  );
+  const count = await categoryRepository.countDescendants(category1);
+  // })
+  // .then((count) => {
+  console.log(count);
+  console.log(
+    "Descendants count has been loaded. Lets now load all ancestors of the childChildCategory1:"
+  );
+  const categories3 = await categoryRepository.findAncestors(
+    childChildCategory1
+  );
+  // })
+  // .then((categories) => {
+  console.log(categories3);
+  console.log("Ancestors has been loaded. Now lets get them in a tree:");
+  const categories4 = await categoryRepository.findAncestorsTree(
+    childChildCategory1
+  );
+  // })
+  // .then((categories) => {
+  console.log(categories4);
+  console.log(
+    "Ancestors in a tree has been loaded. Now lets get a count of the ancestors:"
+  );
+  const count2 = await categoryRepository.countAncestors(childChildCategory1);
+  // })
+  // .then((count) => {
+  console.log(count2);
+  console.log(
+    "Ancestors count has been loaded. Now lets get a all roots (categories without parents):"
+  );
+  const categories5 = await categoryRepository.findRoots();
+  // })
+  // .then((categories) => {
+  console.log(categories5);
+  // })
+  // .catch((error) => console.log(error.stack));
+}
+
 async function testQueryBuilder() {
   let photos = await connection
     .getRepository(Photo)
@@ -232,7 +319,9 @@ async function testActiveRecord(connectin: Connection) {
     connection = await createConnection();
     console.log("connection is ok");
 
-    await testQueryBuilder();
+    await testClosureTable();
+
+    // await testQueryBuilder();
 
     // await testManyToMany();
 
