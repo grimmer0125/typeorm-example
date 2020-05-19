@@ -1,5 +1,11 @@
 # Example how to use TypeORM with TypeScript
 
+## Launch PostgreSQL
+
+`docker run -p 5432:5432 --name some-postgres -e POSTGRES_PASSWORD=test -d postgres`
+
+## run
+
 1. clone repository
 2. install yarn v1, https://classic.yarnpkg.com/lang/en/
 3. run `yarn install`
