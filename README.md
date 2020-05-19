@@ -2,7 +2,7 @@
 
 ## Launch PostgreSQL
 
-`docker run -p 5432:5432 --name some-postgres -e POSTGRES_PASSWORD=test -d postgres`
+`docker run -p 5432:5432 --name some-postgres -e POSTGRES_PASSWORD=test -d postgres:12.1`
 
 ## run
 
