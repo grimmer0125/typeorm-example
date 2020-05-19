@@ -11,16 +11,25 @@
 
 ref: https://typeorm.io/#/migrations
 
-### using ts-node
+_typeorm migration:create and typeorm migration:generate will create .ts files. The migration:run and migration:revert commands only work on .js files._
+
+### using ts-node (auto-generate or create+fill)
 
 1. `yarn typeorm migration:generate -n PostRefactoring`
+   - or `yarn typeorm migration:create` + fill the generated .ts byself
 2. `yarn typeorm migration:run`
 
-### using tsc [WIP]
+### using tsc to create empty migration files, fill by self and run migration
 
-1.
+1. Create empty migrations, `yarn migration_create -n PostRefactoring` then fill the generated .ts byself`
+
+2. `yarn build`
+
+3. `yarn deploy_typeorm migration:run`
 
 ## Issues
+
+### Difficult to only use tsc to auto-generate migrations, need ts-node since the generated files are ts files
 
 ### TypeORM 0.2.24 (latest) is not compatible with tslib 2.0.0
 

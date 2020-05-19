@@ -36,6 +36,8 @@
     "build": "tsc",
     "deploy": "NODE_ENV=production node dist/index.js",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",
+    "migration_create": "./node_modules/typeorm/cli.js migration:create",
+    "deploy_typeorm": "./node_modules/typeorm/cli.js -c production",
     "dev": "ts-node src/index.ts"
   },
   "resolutions": {

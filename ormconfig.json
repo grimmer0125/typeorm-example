@@ -4,10 +4,10 @@
     "type": "postgres",
     "host": "localhost",
     "port": 5432,
-    "username": "test",
-    "password": "test",
-    "database": "test",
-    "synchronize": true,
+    "username": "grimmer",
+    "password": "grimmer",
+    "database": "grimmer",
+    "synchronize": false,
     "logging": true,
     "entities": ["src/entity/*.{js,ts}"],
     "subscribers": ["src/subscriber/*.{js,ts}"],
@@ -23,18 +23,18 @@
     "type": "postgres",
     "host": "localhost",
     "port": 5432,
-    "username": "test",
-    "password": "test",
-    "database": "test",
+    "username": "grimmer",
+    "password": "grimmer",
+    "database": "grimmer",
     "synchronize": true,
     "logging": true,
     "entities": ["dist/entity/*.js"],
     "subscribers": ["dist/subscriber/*.js"],
     "migrations": ["dist/migration/*.js"],
     "cli": {
-      "entitiesDir": "src/entity",
-      "migrationsDir": "src/migration",
-      "subscribersDir": "src/subscriber"
+      "entitiesDir": "dist/entity",
+      "migrationsDir": "dist/migration",
+      "subscribersDir": "dist/subscriber"
     }
   }
 ]
