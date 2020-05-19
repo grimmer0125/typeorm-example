@@ -7,6 +7,19 @@
 5. run `yarn dev`
 6. enjoy!
 
+## mirations
+
+ref: https://typeorm.io/#/migrations
+
+### using ts-node
+
+1. `yarn typeorm migration:generate -n PostRefactoring`
+2. `yarn typeorm migration:run`
+
+### using tsc [WIP]
+
+1.
+
 ## Issues
 
 ### TypeORM 0.2.24 (latest) is not compatible with tslib 2.0.0
